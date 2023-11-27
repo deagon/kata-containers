@@ -1083,6 +1083,24 @@ func ContainerConfig(ocispec specs.Spec, bundlePath, cid string, detach bool) (v
 
 	containerConfig.Annotations[vcAnnotations.ContainerTypeKey] = string(cType)
 
+	// hack: by nevis, remove PCIDEVICE_*
+	ociLog.Debugf("### containerConfig before hack: %+v", containerConfig)
+
+	envs := containerConfig.Cmd.Envs
+	containerConfig.Cmd.Envs = make([]types.EnvVar, 0)
+	for _, env := range envs {
+		if !strings.HasPrefix(env.Var, "PCIDEVICE_") {
+			containerConfig.Cmd.Envs = append(containerConfig.Cmd.Envs, env)
+		}
+	}
+	specEnvs := containerConfig.CustomSpec.Process.Env
+	containerConfig.CustomSpec.Process.Env = make([]string, 0)
+	for _, env := range specEnvs {
+		if !strings.HasPrefix(env, "PCIDEVICE_") {
+			containerConfig.CustomSpec.Process.Env = append(containerConfig.CustomSpec.Process.Env, env)
+		}
+	}
+
 	return containerConfig, nil
 }
 
