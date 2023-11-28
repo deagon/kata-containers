@@ -681,7 +681,7 @@ func (s *Sandbox) coldOrHotPlugVFIO(sandboxConfig *SandboxConfig) (bool, error) 
 				// otherwise at the container level the kata-agent
 				// will try to hot-plug them.
 				if modeIsGK {
-					sandboxConfig.Containers[cnt].DeviceInfos[dev].ID = "remove-we-are-cold-plugging"
+					// sandboxConfig.Containers[cnt].DeviceInfos[dev].ID = "remove-we-are-cold-plugging"
 				}
 			}
 		}
