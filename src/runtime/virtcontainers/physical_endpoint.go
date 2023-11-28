@@ -100,6 +100,8 @@ func (endpoint *PhysicalEndpoint) Attach(ctx context.Context, s *Sandbox) error 
 		Major:         c.Major,
 		Minor:         c.Minor,
 		ColdPlug:      true,
+		// TODO: read from config.ColdPlugVFIO
+		Port: config.RootPort,
 	}
 
 	_, err = s.AddDevice(ctx, d)
