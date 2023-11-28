@@ -788,7 +788,8 @@ func (q *qemu) createPCIeTopology(qemuConfig *govmmQemu.Config, hypervisorConfig
 
 	// Get the number of hot(cold)-pluggable ports needed from the provided
 	// VFIO devices and VhostUserBlockDevices
-	var numOfPluggablePorts uint32 = 0
+	// hack: by nevis, default ports 1
+	var numOfPluggablePorts uint32 = 1
 	for _, dev := range hypervisorConfig.VFIODevices {
 		var err error
 		dev.HostPath, err = config.GetHostPath(dev, false, "")
@@ -824,6 +825,7 @@ func (q *qemu) createPCIeTopology(qemuConfig *govmmQemu.Config, hypervisorConfig
 		if numOfPluggablePorts > maxPCIeRootPort {
 			return fmt.Errorf("Number of PCIe Root Ports exceeed allowed max of %d", maxPCIeRootPort)
 		}
+		// only concern the numOfPluggablePorts, 0 means nothing to happen
 		qemuConfig.Devices = q.arch.appendPCIeRootPortDevice(qemuConfig.Devices, numOfPluggablePorts, memSize32bit, memSize64bit)
 		return nil
 	}
