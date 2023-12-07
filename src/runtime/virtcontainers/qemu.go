@@ -566,6 +566,7 @@ func (q *qemu) CreateVM(ctx context.Context, id string, network Network, hypervi
 		MemPrealloc:   q.config.MemPrealloc,
 		HugePages:     q.config.HugePages,
 		IOMMUPlatform: q.config.IOMMUPlatform,
+		CpuPM:         q.config.CpuPM,
 	}
 
 	incoming := q.setupTemplate(&knobs, &memory)

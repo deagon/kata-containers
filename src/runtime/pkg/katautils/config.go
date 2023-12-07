@@ -162,6 +162,8 @@ type hypervisor struct {
 	DisableGuestSeLinux            bool                      `toml:"disable_guest_selinux"`
 	LegacySerial                   bool                      `toml:"use_legacy_serial"`
 	ExtraMonitorSocket             govmmQemu.MonitorProtocol `toml:"extra_monitor_socket"`
+	// feat: nevis
+	CpuPM bool `toml:"enable_cpu_pm"`
 }
 
 type runtime struct {
@@ -912,6 +914,7 @@ func newQemuHypervisorConfig(h hypervisor) (vc.HypervisorConfig, error) {
 		DisableSeLinux:          h.DisableSeLinux,
 		DisableGuestSeLinux:     h.DisableGuestSeLinux,
 		ExtraMonitorSocket:      extraMonitorSocket,
+		CpuPM:                   h.CpuPM,
 	}, nil
 }
 

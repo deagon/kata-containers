@@ -2678,6 +2678,9 @@ type Knobs struct {
 
 	// IOMMUPlatform will enable IOMMU for supported devices
 	IOMMUPlatform bool
+
+	// feat: nevis, cpu-pm=on
+	CpuPM bool
 }
 
 // IOThread allows IO to be performed on a separate thread.
@@ -3084,6 +3087,11 @@ func (config *Config) appendKnobs() {
 	if config.Knobs.Mlock {
 		config.qemuParams = append(config.qemuParams, "-overcommit")
 		config.qemuParams = append(config.qemuParams, "mem-lock=on")
+	}
+
+	if config.Knobs.CpuPM {
+		config.qemuParams = append(config.qemuParams, "-overcommit")
+		config.qemuParams = append(config.qemuParams, "cpu-pm=on")
 	}
 
 	if config.Knobs.Stopped {
