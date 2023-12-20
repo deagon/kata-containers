@@ -2725,8 +2725,13 @@ func (s *Sandbox) checkVCPUsPinning(ctx context.Context) error {
 		}
 		return nil
 	}
+
+	vcpuSlice := make([]int, len(vCPUThreadsMap.vcpus))
+	for _, tid := range vCPUThreadsMap.vcpus {
+		vcpuSlice = append(vcpuSlice, tid)
+	}
 	// if equal, we can use vCPU thread pinning
-	for i, tid := range vCPUThreadsMap.vcpus {
+	for i, tid := range vcpuSlice {
 		if err := resCtrl.SetThreadAffinity(tid, cpuSetSlice[i:i+1]); err != nil {
 			if err := s.resetVCPUsPinning(ctx, vCPUThreadsMap, cpuSetSlice); err != nil {
 				return err
