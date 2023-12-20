@@ -2696,9 +2696,6 @@ func (s *Sandbox) checkVCPUsPinning(ctx context.Context) error {
 	if s.config == nil {
 		return fmt.Errorf("no sandbox config found")
 	}
-
-	s.Logger().Debugf("### s.config.EnableVCPUsPinning: %v", s.config.EnableVCPUsPinning)
-
 	if !s.config.EnableVCPUsPinning {
 		return nil
 	}
@@ -2712,10 +2709,6 @@ func (s *Sandbox) checkVCPUsPinning(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to get CPUSet config: %v", err)
 	}
-	// hack: by nevis, force 0-x vcpu
-	if cpuSetStr == "" {
-		cpuSetStr = fmt.Sprintf("%d-%d", 0, len(vCPUThreadsMap.vcpus)-1)
-	}
 	cpuSet, err := cpuset.Parse(cpuSetStr)
 	if err != nil {
 		return fmt.Errorf("failed to parse CPUSet string: %v", err)
@@ -2724,11 +2717,6 @@ func (s *Sandbox) checkVCPUsPinning(ctx context.Context) error {
 
 	// check if vCPU thread numbers and CPU numbers are equal
 	numVCPUs, numCPUs := len(vCPUThreadsMap.vcpus), len(cpuSetSlice)
-
-	s.Logger().Debugf("### vCPUThreadsMap: %+v,", vCPUThreadsMap)
-	s.Logger().Debugf("### cpuSetStr: %v,", cpuSetStr)
-	s.Logger().Debugf("### numVCPUs: %v, numCPUs: %v", numVCPUs, numCPUs)
-
 	// if not equal, we should reset threads scheduling to random pattern
 	if numVCPUs != numCPUs {
 		if s.isVCPUsPinningOn {
@@ -2737,17 +2725,14 @@ func (s *Sandbox) checkVCPUsPinning(ctx context.Context) error {
 		}
 		return nil
 	}
-	// hack: by nevis, threadMap not always 0 ~ n-1
-	vcpuID := 0
 	// if equal, we can use vCPU thread pinning
 	for i, tid := range vCPUThreadsMap.vcpus {
-		if err := resCtrl.SetThreadAffinity(tid, cpuSetSlice[vcpuID:vcpuID+1]); err != nil {
+		if err := resCtrl.SetThreadAffinity(tid, cpuSetSlice[i:i+1]); err != nil {
 			if err := s.resetVCPUsPinning(ctx, vCPUThreadsMap, cpuSetSlice); err != nil {
 				return err
 			}
 			return fmt.Errorf("failed to set vcpu thread %d affinity to cpu %d: %v", tid, cpuSetSlice[i], err)
 		}
-		vcpuID += 1
 	}
 	s.isVCPUsPinningOn = true
 	return nil
