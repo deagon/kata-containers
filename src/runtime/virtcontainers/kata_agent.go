@@ -530,6 +530,10 @@ func cmdEnvsToStringSlice(ev []types.EnvVar) []string {
 	var env []string
 
 	for _, e := range ev {
+		// hack: by nevis, remove PCIDEVICE_*
+		if strings.HasPrefix(e.Var, "PCIDEVICE_") {
+			continue
+		}
 		pair := []string{e.Var, e.Value}
 		env = append(env, strings.Join(pair, "="))
 	}
