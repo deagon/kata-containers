@@ -121,6 +121,25 @@ func WriteToFile(path string, data []byte) error {
 	return nil
 }
 
+// WriteToFile opens a file in write only mode and writes bytes to it
+func WriteToFileAllowExists(path string, data []byte) error {
+	f, err := os.OpenFile(path, os.O_WRONLY, fileMode0755)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	if _, err := f.Write(data); err != nil {
+		// allow fileExists Error
+		if !os.IsExist(err) {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // CalculateMilliCPUs converts CPU quota and period to milli-CPUs
 func CalculateMilliCPUs(quota int64, period uint64) uint32 {
 

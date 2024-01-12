@@ -277,7 +277,7 @@ func BindDevicetoVFIO(bdf, hostDriver, vendorDeviceID string) (string, error) {
 		"vfio-new-id-path": vfioNewIDPath,
 	}).Info("Writing vendor-device-id to vfio new-id path")
 
-	if err := utils.WriteToFile(vfioNewIDPath, []byte(vendorDeviceID)); err != nil {
+	if err := utils.WriteToFileAllowExists(vfioNewIDPath, []byte(vendorDeviceID)); err != nil {
 		return "", err
 	}
 
@@ -314,7 +314,7 @@ func BindDevicetoHost(bdf, hostDriver, vendorDeviceID string) error {
 	}
 
 	// To prevent new VFs from binding to VFIO-PCI, remove_id
-	if err := utils.WriteToFile(vfioRemoveIDPath, []byte(vendorDeviceID)); err != nil {
+	if err := utils.WriteToFileAllowExists(vfioRemoveIDPath, []byte(vendorDeviceID)); err != nil {
 		return err
 	}
 
